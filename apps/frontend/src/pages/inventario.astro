@@ -1,0 +1,220 @@
+---
+import LayoutLogin from "../layouts/LayoutLogin.astro";
+import AuthProtected from "../features/auth/AuthProtected.astro"
+---
+
+<LayoutLogin>
+    <AuthProtected>
+    <div class="container">
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <li><a href="/admin">Horarios</a></li>
+                    <li><a href="/inventario">Inventario</a></li>
+                    <li><a href="/citas">Citas</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content" id="inventario">
+            <div class="content-header">
+                <h2>Gestión de Inventario 📦</h2>
+                <button id="add-item-btn" class="action-btn add-btn">Agregar Producto</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Categoría</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="inventario" id="inventory-body">
+                    <tr>
+                        <td data-editable="true">Fresas de Diamante (Kit)</td>
+                        <td data-editable="true">50</td>
+                        <td data-editable="true">Instrumental Rotatorio</td>
+                        <td data-editable="true">En Stock</td>
+                        <td>
+                            <button class="action-btn edit-btn">Editar</button>
+                            <button class="action-btn delete-btn">Eliminar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-editable="true">Anestesia Lidocaína 2%</td>
+                        <td data-editable="true">25</td>
+                        <td data-editable="true">Anestésicos</td>
+                        <td data-editable="true">Stock Bajo</td>
+                        <td>
+                            <button class="action-btn edit-btn">Editar</button>
+                            <button class="action-btn delete-btn">Eliminar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-editable="true">Guantes de Nitrilo (Caja)</td>
+                        <td data-editable="true">15</td>
+                        <td data-editable="true">Desechables</td>
+                        <td data-editable="true">En Stock</td>
+                        <td>
+                            <button class="action-btn edit-btn">Editar</button>
+                            <button class="action-btn delete-btn">Eliminar</button>
+                        </td>
+                    </tr>
+                    </tbody>
+            </table>
+        </main>
+    </div>
+    </AuthProtected>
+</LayoutLogin>
+
+<style>
+    .container {
+    display: flex;
+}
+
+body {
+    background: url('/src/assets/admin.jpg');
+    background-size: cover;
+    background-position: center;
+    align-items: center;   /* Centra verticalmente */
+    justify-content: center; /* Centra horizontalmente */
+    min-height: 100vh;     /* Asegura que el body ocupe toda la altura de la pantalla */
+}
+
+/* Barra de Navegación Superior */
+.navbar {
+    background-color: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar .logo h1 {
+    margin: 0;
+    color: #4a90e2;
+    text-align: center;
+}
+
+/* Barra Lateral */
+.sidebar {
+    width: 200px;
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+    height: 100vh;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #555;
+}
+
+/* Contenido Principal */
+.content {
+    flex-grow: 1;
+    padding: 2rem;
+    margin-left: 200px;
+    margin-top: 30px;
+    background: rgb(217, 220, 224);
+    border-radius: 20px;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.content h2 {
+    color: #333;
+    margin: 0;
+}
+
+/* Tabla de Horarios */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+thead {
+    background-color: #4a90e2;
+    color: white;
+}
+
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+td input {
+    width: 95%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.inventario{
+    background: white;
+}
+
+/* Botones de Acción */
+.action-btn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.add-btn {
+    background-color: #28a745; /* Verde */
+}
+
+.add-btn:hover {
+    background-color: #218838;
+}
+
+.edit-btn {
+    background-color: #ffc107; /* Amarillo */
+    color: #212529;
+}
+
+.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+.save-btn {
+    background-color: #007bff; /* Azul */
+}
+
+.save-btn:hover {
+    background-color: #0069d9;
+}
+
+.delete-btn {
+    background-color: #dc3545; /* Rojo */
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+</style>

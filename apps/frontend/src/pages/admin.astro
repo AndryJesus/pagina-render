@@ -1,0 +1,367 @@
+---
+import LayoutLogin from "../layouts/LayoutLogin.astro";
+import AuthProtected from "../features/auth/AuthProtected.astro"
+---
+
+<LayoutLogin>
+    <AuthProtected>
+    <div class="container">
+        <aside class="sidebar">
+            <nav>
+                <ul>
+                    <li><a href="/admin">Horarios</a></li>
+                    <li><a href="/inventario">Inventario</a></li>
+                    <li><a href="/citas">Citas</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content" id="horarios">
+            <div class="content-header">
+                <h2>Horarios del Personal 👤</h2>
+                <button id="add-personal-btn" class="action-btn add-btn">Agregar Empleado</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Empleado</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="empleados" id="personal-body">
+                    <tr>
+                        <td data-editable="true">Dr. Juan Pérez</td>
+                        <td data-editable="true">9:00 AM - 5:00 PM</td>
+                        <td data-editable="true">9:00 AM - 5:00 PM</td>
+                        <td data-editable="true">Descansa</td>
+                        <td data-editable="true">9:00 AM - 5:00 PM</td>
+                        <td data-editable="true">9:00 AM - 2:00 PM</td>
+                        <td>
+                            <button class="action-btn edit-btn">Editar</button>
+                            <button class="action-btn delete-btn">Eliminar</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td data-editable="true">Dra. María Rodriguez</td>
+                        <td data-editable="true">9:00 AM - 5:00 PM</td>
+                        <td data-editable="true">Descansa</td>
+                        <td data-editable="true">9:00 AM - 5:00 PM</td>
+                        <td data-editable="true">9:00 AM - 5:00 PM</td>
+                        <td data-editable="true">9:00 AM - 2:00 PM</td>
+                        <td>
+                            <button class="action-btn edit-btn">Editar</button>
+                            <button class="action-btn delete-btn">Eliminar</button>
+                        </td>
+                    </tr>
+                    </tbody>
+            </table>
+        </main>
+    </div>
+    </AuthProtected>
+</LayoutLogin>
+
+<style>
+    .container {
+    display: flex;
+}
+
+body {
+    background: url('/src/assets/admin.jpg');
+    background-size: cover;
+    background-position: center;
+    align-items: center;   /* Centra verticalmente */
+    justify-content: center; /* Centra horizontalmente */
+    min-height: 100vh;     /* Asegura que el body ocupe toda la altura de la pantalla */
+}
+
+/* Barra de Navegación Superior */
+.navbar {
+    background-color: #ffffff;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar .logo h1 {
+    margin: 0;
+    color: #4a90e2;
+    text-align: center;
+}
+
+/* Barra Lateral */
+.sidebar {
+    width: 200px;
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+    height: 100vh;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar nav ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #555;
+}
+
+/* Contenido Principal */
+.content {
+    flex-grow: 1;
+    padding: 2rem;
+    margin-left: 200px;
+    margin-top: 30px;
+    background: rgb(217, 220, 224);
+    border-radius: 20px;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.content h2 {
+    color: #333;
+    margin: 0;
+}
+
+/* Tabla de Horarios */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+thead {
+    background-color: #4a90e2;
+    color: white;
+}
+
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+td input {
+    width: 95%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #0069d9;
+}
+
+.empleados{
+    background: white;
+}
+
+/* Botones de Acción */
+.action-btn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.add-btn {
+    background-color: #28a745; /* Verde */
+}
+
+.add-btn:hover {
+    background-color: #218838;
+}
+
+.edit-btn {
+    background-color: #ffc107; /* Amarillo */
+    color: #212529;
+}
+
+.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+.save-btn {
+    background-color: #007bff; /* Azul */
+}
+
+.save-btn:hover {
+    background-color: #0069d9;
+}
+
+.delete-btn {
+    background-color: #dc3545; /* Rojo */
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+</style>
+
+<script is:client-load>
+        // --- Selectores del DOM ---
+        const agregarEmpleadoBtn = document.getElementById('add-personal-btn');
+        const personalFormContainer = document.getElementById('personal-form-container');
+        const cancelAddBtn = document.getElementById('cancel-add-btn');
+        const personalForm = document.getElementById('personal-form'); // El formulario en sí
+        const personalBody = document.getElementById('personal-body'); // El tbody de tu tabla donde van los empleados
+
+        // Campos del formulario
+        const nombreInput = document.getElementById('nombre-empleado');
+        const lunesInput = document.getElementById('horario-lunes');
+        const martesInput = document.getElementById('horario-martes');
+        const miercolesInput = document.getElementById('horario-miercoles');
+        const juevesInput = document.getElementById('horario-jueves');
+        const viernesInput = document.getElementById('horario-viernes');
+
+        // Estado para saber si estamos editando o agregando
+        let editingIndex = -1; // -1 significa que no estamos editando, cualquier otro número es el índice del empleado
+        let personal = [
+            {
+                nombre: 'Dr. Juan Pérez',
+                horario: {
+                    lunes: '9:00 AM - 5:00 PM',
+                    martes: '9:00 AM - 5:00 PM',
+                    miercoles: 'Descansa',
+                    jueves: '9:00 AM - 5:00 PM',
+                    viernes: '9:00 AM - 2:00 PM'
+                }
+            },
+            {
+                nombre: 'Dra. María Rodriguez',
+                horario: {
+                    lunes: '9:00 AM - 5:00 PM',
+                    martes: 'Descansa',
+                    miercoles: '9:00 AM - 5:00 PM',
+                    jueves: '9:00 AM - 5:00 PM',
+                    viernes: '9:00 AM - 2:00 PM'
+                }
+            }
+        ];
+
+        // --- Funciones de Renderizado ---
+        function crearFilaEmpleadoHTML(empleado) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td data-editable="true">${empleado.nombre}</td>
+                <td data-editable="true">${empleado.horario.lunes}</td>
+                <td data-editable="true">${empleado.horario.martes}</td>
+                <td data-editable="true">${empleado.horario.miercoles}</td>
+                <td data-editable="true">${empleado.horario.jueves}</td>
+                <td data-editable="true">${empleado.horario.viernes}</td>
+                <td>
+                    <button class="action-btn edit-btn">Editar</button>
+                    <button class="action-btn delete-btn">Eliminar</button>
+                </td>
+            `;
+            return tr;
+        }
+
+        function renderizarPersonal() {
+            personalBody.innerHTML = ''; // Limpiar el contenido actual de la tabla
+            personal.forEach((empleado, index) => {
+                const fila = crearFilaEmpleadoHTML(empleado);
+                fila.dataset.index = index; // Guardar el índice para facilitar la edición/eliminación
+                personalBody.appendChild(fila);
+            });
+            adjuntarEventosTabla(); // Volver a adjuntar eventos después de renderizar
+        }
+
+        // --- Funciones de Interacción ---
+
+        // Mostrar/Ocultar el formulario
+        agregarEmpleadoBtn.addEventListener('click', () => {
+            personalFormContainer.style.display = 'block'; // Mostrar el formulario
+            personalForm.reset(); // Limpiar el formulario
+            document.querySelector('#personal-form h3').textContent = 'Agregar Nuevo Empleado';
+            editingIndex = -1; // Resetear el índice de edición
+        });
+
+        cancelAddBtn.addEventListener('click', () => {
+            personalFormContainer.style.display = 'none'; // Ocultar el formulario
+        });
+
+        // Manejar el envío del formulario (agregar/editar)
+        personalForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Evitar el envío por defecto del formulario
+
+            const nuevoEmpleado = {
+                nombre: nombreInput.value,
+                horario: {
+                    lunes: lunesInput.value,
+                    martes: martesInput.value,
+                    miercoles: miercolesInput.value,
+                    jueves: juevesInput.value,
+                    viernes: viernesInput.value
+                }
+            };
+
+            if (editingIndex === -1) {
+                // Modo de agregar
+                personal.push(nuevoEmpleado);
+            } else {
+                // Modo de editar
+                personal[editingIndex] = nuevoEmpleado;
+            }
+
+            renderizarPersonal(); // Actualizar la tabla
+            personalFormContainer.style.display = 'none'; // Ocultar el formulario
+        });
+
+        // Adjuntar eventos a los botones de editar y eliminar (Delegación de Eventos)
+        function adjuntarEventosTabla() {
+            personalBody.addEventListener('click', (event) => {
+                const target = event.target;
+
+                // --- Editar Empleado ---
+                if (target.classList.contains('edit-btn')) {
+                    const row = target.closest('tr');
+                    editingIndex = parseInt(row.dataset.index); // Obtener el índice del empleado
+                    const empleadoAEditar = personal[editingIndex];
+
+                    // Rellenar el formulario con los datos del empleado
+                    nombreInput.value = empleadoAEditar.nombre;
+                    lunesInput.value = empleadoAEditar.horario.lunes;
+                    martesInput.value = empleadoAEditar.horario.martes;
+                    miercolesInput.value = empleadoAEditar.horario.miercoles;
+                    juevesInput.value = empleadoAEditar.horario.jueves;
+                    viernesInput.value = empleadoAEditar.horario.viernes;
+
+                    document.querySelector('#personal-form h3').textContent = 'Editar Empleado';
+                    personalFormContainer.style.display = 'block'; // Mostrar el formulario
+                }
+
+                // --- Eliminar Empleado ---
+                if (target.classList.contains('delete-btn')) {
+                    const row = target.closest('tr');
+                    const indexToDelete = parseInt(row.dataset.index);
+
+                    if (confirm('¿Estás seguro de que quieres eliminar a este empleado?')) {
+                        personal.splice(indexToDelete, 1); // Eliminar el empleado del array
+                        renderizarPersonal(); // Volver a renderizar la tabla
+                    }
+                }
+            });
+        }
+        
+        // --- Inicialización ---
+        renderizarPersonal(); // Cargar los empleados iniciales al cargar la página
+    </script>

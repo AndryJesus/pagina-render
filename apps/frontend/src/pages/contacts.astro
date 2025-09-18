@@ -1,0 +1,14 @@
+---
+import AuthProtected from "../features/auth/AuthProtected.astro"
+import ContactsList from "../features/contacts/ContactsList.astro"
+import CreateContactForm from "../features/contacts/CreateContactForm.astro"
+import LayoutLogin from "../layouts/LayoutLogin.astro"
+---
+<LayoutLogin title="App">
+  <AuthProtected>
+    <main class="h-[calc(100vh-4rem)] flex flex-col gap-8 p-4 max-w-[90rem] mx-auto md:items-center">
+      <CreateContactForm/>
+      <ContactsList/>
+    </main>
+  </AuthProtected>
+</LayoutLogin>

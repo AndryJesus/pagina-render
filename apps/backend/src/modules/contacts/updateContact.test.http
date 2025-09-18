@@ -1,0 +1,6 @@
+PUT  http://localhost:3001/contacts/5
+Content-Type: application/json
+{
+  "name": "Alejandro Perez",
+  "phone": "04122110505"
+}

@@ -1,0 +1,22 @@
+---
+import ig from "../../assets/instagram.png"
+import fb from "../../assets/facebook.png"
+import tt from "../../assets/tik-tok.png"
+---
+
+<footer class="bg-gray-800 text-white py-6 text-center">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-sm md:text-base">&copy; 2025 Clínica Dental Sonrisa Perfecta. Todos los derechos reservados.</p>
+            <div class="flex space-x-5 mt-4 md:mt-0">
+                <a href="https://www.instagram.com/tu_usuario_instagram/" target="_blank" aria-label="Síguenos en Instagram" class="block transition-transform duration-300 hover:scale-110">
+                    <img src={ig.src} alt="Instagram" class="w-10 h-10">
+                </a>
+                <a href="https://www.tiktok.com/@tu_usuario_tiktok" target="_blank" aria-label="Síguenos en TikTok" class="block transition-transform duration-300 hover:scale-110">
+                    <img src={tt.src} alt="TikTok" class="w-10 h-10">
+                </a>
+                <a href="https://www.facebook.com/tu_pagina_facebook/" target="_blank" aria-label="Síguenos en Facebook" class="block transition-transform duration-300 hover:scale-110">
+                    <img src={fb.src} alt="Facebook" class="w-10 h-10">
+                </a>
+            </div>
+        </div>
+    </footer>

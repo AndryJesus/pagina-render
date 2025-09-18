@@ -1,0 +1,90 @@
+---
+import Layout from "../layouts/Layout.astro"
+import blaqueamiento from "../assets/blanquiamiento.jpg"
+import recepcion from "../assets/recepcion.jpg"
+import consultorioEquipo from "../assets/equipo-odontologico.webp"
+import sonrisa from "../assets/orto-resultado.jpg"
+import colegas from "../assets/equipo-colegas-dentistas.avif"
+import implante from "../assets/istockphoto-1439446550-612x612.jpg"
+import niño from "../assets/niño.jpg"
+import salaEspera from "../assets/sala de espera.jpg"
+import FinComponents from "../features/navigation/fin.astro";
+---
+
+<Layout>
+    <main>
+        {/* Usamos las mismas clases de la sección de "Servicios" para mantener la consistencia */}
+        <section id="galeria" class="py-12 md:py-20 bg-gray-50">
+            <div class="max-w-6xl mx-auto px-4">
+
+                {/* Títulos con el mismo estilo que las otras secciones */}
+                <h2 class="text-center text-3xl md:text-4xl font-semibold mb-4 text-blue-700">Nuestra Galería</h2>
+                <p class="text-center text-lg text-gray-600 mb-12 max-w-3xl mx-auto">Un vistazo a nuestras instalaciones y los resultados que logramos.</p>
+
+                {/* Reutilizamos el grid de los servicios para la galería */}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
+                    {/* Cada item de la galería ahora es una "card" idéntica a las de tus servicios */}
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
+                        <img src={recepcion.src} alt="Recepción de la clínica" class="w-full h-48 object-cover">
+                        <div class="p-4 text-center">
+                            <h3 class="font-semibold text-gray-800">Nuestra Cómoda Recepción</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
+                        <img src={blaqueamiento.src} alt="Paciente sonriendo después de tratamiento" class="w-full h-48 object-cover">
+                        <div class="p-4 text-center">
+                            <h3 class="font-semibold text-gray-800">Resultados de Blanqueamiento</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
+                        <img src={consultorioEquipo.src} alt="Consultorio dental moderno" class="w-full h-48 object-cover">
+                        <div class="p-4 text-center">
+                            <h3 class="font-semibold text-gray-800">Consultorios Equipados</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
+                        <img src={sonrisa.src} alt="Resultado de tratamiento de ortodoncia" class="w-full h-48 object-cover">
+                        <div class="p-4 text-center">
+                            <h3 class="font-semibold text-gray-800">Sonrisa Alineada</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
+                        <img src={colegas.src} alt="Equipo de dentistas trabajando" class="w-full h-48 object-cover">
+                        <div class="p-4 text-center">
+                            <h3 class="font-semibold text-gray-800">Profesionales en Acción</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
+                        <img src={implante.src} alt="Modelo de implante dental" class="w-full h-48 object-cover">
+                        <div class="p-4 text-center">
+                            <h3 class="font-semibold text-gray-800">Soluciones con Implantes</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
+                        <img src={niño.src} alt="Niño en consulta de odontopediatría" class="w-full h-48 object-cover">
+                        <div class="p-4 text-center">
+                            <h3 class="font-semibold text-gray-800">Cuidando a los Pequeños</h3>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300">
+                        <img src={salaEspera.src} alt="Sala de espera de la clínica" class="w-full h-48 object-cover">
+                        <div class="p-4 text-center">
+                            <h3 class="font-semibold text-gray-800">Ambiente Relajado</h3>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+   <FinComponents/>
+</Layout>

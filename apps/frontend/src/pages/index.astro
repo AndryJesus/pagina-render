@@ -1,0 +1,160 @@
+---
+
+import Layout from "../layouts/Layout.astro";
+import video from "../assets/clinica-odontologia.mp4"
+import equipo from "../assets/equipo-colegas-dentistas.avif"
+import limpiezaDental from "../assets/dientelimpio.png"
+import blaquiamiento from "../assets/blanquiamiento.jpg"
+import ortodoncia from "../assets/ortodoncia.jpg"
+import implanteDental from "../assets/implanten.jpg"
+import periodoncia from "../assets/periodoncia.webp"
+import cirugiaDental from "../assets/cirugía.jpg"
+import FinComponents from "../features/navigation/fin.astro";
+import WspLogo from "../features/navigation/wsp.astro"
+---
+
+<Layout title="Clínica Dental Sonrisa Perfecta | Odontología de Confianza">
+
+    <main>
+        <section class="relative h-screen flex items-center justify-center text-center text-white overflow-hidden">
+            <div class="relative z-10 flex flex-col items-center justify-center mx-auto px-4">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight">¿Listo para la mejor consulta odontológica?</h1>
+                <p class="text-lg sm:text-xl md:text-2xl mb-8 font-light max-w-2xl">Ofrecemos una odontología moderna y cercana para cuidar de tu salud bucal y la de tu familia.</p>
+                <a href="https://api.whatsapp.com/send?phone=+584127170236&text=Hola,%20me%20gustar%C3%ADa%20solicitar%20una%20cita%20odontol%C3%B3gica." 
+                   class="inline-block text-xl md:text-2xl bg-black text-white font-extrabold py-3 px-8 rounded-full transition-colors duration-300 hover:bg-blue-600 focus:outline-none focus:ring-2  focus:ring-opacity-75" 
+                   target="_blank">Contáctanos</a>
+            </div>
+            <video muted autoplay loop class="absolute top-0 left-0 w-full h-full object-cover">
+                <source src={video} type="video/mp4">
+            </video>
+            <div class="absolute top-0 left-0 w-full h-full bg-black opacity-30 mix-blend-overlay"></div>
+        </section>
+
+        <section id="servicios" class="py-12 md:py-20 bg-gray-50">
+            <div class="max-w-6xl mx-auto px-4">
+                <h2 class="text-center text-3xl md:text-4xl font-semibold mb-10 text-blue-700 px-4">Nuestros Servicios</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 servicio-card">
+                        <img src={limpiezaDental.src} alt="Icono de Limpieza Dental" class="w-40 h-28 object-contain mx-auto mb-6">
+                        <h3 class="text-2xl font-semibold mb-2 text-gray-800">Limpieza Dental</h3>
+                        <p class="text-gray-600">Mantén tu sonrisa sana y brillante con nuestras limpiezas profesionales.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 servicio-card">
+                        <img src={blaquiamiento.src} alt="Icono de Blanqueamiento Dental" class="w-40 h-28 object-contain mx-auto mb-6">
+                        <h3 class="text-2xl font-semibold mb-2 text-gray-800">Blanqueamiento Dental</h3>
+                        <p class="text-gray-600">Luce una sonrisa más blanca y radiante con nuestros tratamientos seguros.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 servicio-card">
+                        <img src={ortodoncia.src} alt="Icono de Ortodoncia" class="w-40 h-28 object-contain mx-auto mb-6">
+                        <h3 class="text-2xl font-semibold mb-2 text-gray-800">Ortodoncia</h3>
+                        <p class="text-gray-600">Alinea tu sonrisa con nuestras opciones de brackets tradicionales e invisibles.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 servicio-card">
+                        <img src={implanteDental.src} alt="Icono de Implantes Dentales" class="w-40 h-28 object-contain mx-auto mb-6">
+                        <h3 class="text-2xl font-semibold mb-2 text-gray-800">Implantes Dentales</h3>
+                        <p class="text-gray-600">Recupera la función y estética de tus dientes con soluciones permanentes.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 servicio-card">
+                        <img src={periodoncia.src} alt="Icono de Periodoncia" class="w-40 h-28 object-contain mx-auto mb-6">
+                        <h3 class="text-2xl font-semibold mb-2 text-gray-800">Periodoncia</h3>
+                        <p class="text-gray-600">Cuida la salud de tus encías con tratamientos avanzados para enfermedades periodontales.</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-2 transition-all duration-300 servicio-card">
+                        <img src={cirugiaDental.src} alt="Icono de Cirugía Dental" class="w-40 h-28 object-contain mx-auto mb-6">
+                        <h3 class="text-2xl font-semibold mb-2 text-gray-800">Cirugía Dental</h3>
+                        <p class="text-gray-600">Soluciones quirúrgicas especializadas para diversas necesidades bucales.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nosotros" class="py-12 md:py-20 bg-white">
+            <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center gap-10 bg-gray-900 rounded-xl p-6 md:p-10">
+                <div class="md:flex-1 text-white">
+                    <h2 class="text-center md:text-left text-3xl md:text-4xl font-semibold mb-6 text-blue-400 px-4">Conoce a Nuestro Equipo</h2>
+                    <h4 class="text-lg md:text-xl font-light italic mb-4 text-blue-100 px-4">Somos un equipo de profesionales apasionados por la odontología y comprometidos con el bienestar de nuestros pacientes. Utilizamos la última tecnología para ofrecer tratamientos de la más alta calidad en un ambiente cálido y familiar.</h4>
+                </div>
+                <div class="md:flex-1">
+                    <img src={equipo.src} alt="Equipo de dentistas de la Clínica Sonrisa Perfecta" class="max-w-full h-auto rounded-xl p-4">
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonios" class="py-12 md:py-20 bg-gray-50 text-center">
+            <h2 class="text-center text-3xl md:text-4xl font-semibold mb-10 text-blue-700 px-4">Lo que dicen nuestros pacientes</h2>
+            <div class="max-w-3xl mx-auto relative overflow-hidden min-h-[250px]">
+                <div class="slide absolute w-full transition-opacity duration-500 ease-in-out opacity-0 active">
+                    <p class="text-xl md:text-2xl italic mb-6 text-gray-700">"¡El mejor trato y profesionalismo que he recibido! Mi sonrisa nunca se ha visto mejor. Recomiendo totalmente a la Clínica Sonrisa Perfecta."</p>
+                </div>
+                <div class="slide absolute w-full transition-opacity duration-500 ease-in-out opacity-0">
+                    <p class="text-xl md:text-2xl italic mb-6 text-gray-700">"Tenía mucho miedo de ir al dentista, pero el equipo me hizo sentir muy cómodo y seguro. ¡Gracias por devolverme la confianza para sonreír!"</p>
+                </div>
+                <div class="slide absolute w-full transition-opacity duration-500 ease-in-out opacity-0">
+                    <p class="text-xl md:text-2xl italic mb-6 text-gray-700">"Desde la ortodoncia de mi hijo hasta mis implantes, toda mi familia confía en esta clínica. Son excelentes en lo que hacen."</p>
+                </div>
+                
+                <div class="mt-40 md:mt-48 flex justify-center space-x-4">
+                    <button class="prev bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full cursor-pointer text-base transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">&lt;</button>
+                    <button class="next bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full cursor-pointer text-base transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">&gt;</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="contacto" class="py-12 md:py-20 bg-blue-700 text-white text-center">
+            <h3 class="text-3xl md:text-4xl font-semibold mb-8 px-4">Ubícanos en:</h3>
+            <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-center items-center gap-8">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2617.4239036736526!2d-66.90607962734035!3d10.602371403410755!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8c2a5d6e67187eb3%3A0x66f03b269ae6a3e8!2sEstadio%20F%C3%B3rum%20La%20Guaira!5e0!3m2!1ses!2sve!4v1751796076186!5m2!1ses!2sve" class="w-full md:w-1/2 h-80 md:h-96 border-0 rounded-lg shadow-lg" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!4v1751796627817!6m8!1m7!1sCAoSF0NJSE0wb2dLRUlDQWdJQ3hqSm1mOHdF!2m2!1d10.60344871381551!2d-66.90471657255674!3f277.3410362243054!4f1.216621112939606!5f0.7820865974627469" class="w-full md:w-1/2 h-80 md:h-96 border-0 rounded-lg shadow-lg" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </section>
+    </main>
+
+    <WspLogo/>
+   <FinComponents/>
+</Layout>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Slider de Testimonios
+    const slides = document.querySelectorAll('.slide');
+    const next = document.querySelector('.next');
+    const prev = document.querySelector('.prev');
+    let currentIndex = 0;
+
+    function showSlide(index: number) {
+        slides.forEach((slide, i) => {
+            slide.classList.remove('opacity-100'); // Eliminar active de CSS si se usa opacidad
+            slide.classList.add('opacity-0');
+            if (i === index) {
+                slide.classList.remove('opacity-0');
+                slide.classList.add('opacity-100'); // Reemplaza 'active' por 'opacity-100'
+            }
+        });
+    }
+
+    function nextSlide() {
+        currentIndex = (currentIndex + 1) % slides.length;
+        showSlide(currentIndex);
+    }
+
+    function prevSlide() {
+        currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+        showSlide(currentIndex);
+    }
+
+    // Inicializa el primer slide
+    showSlide(currentIndex);
+
+    // Agrega eventos a los botones de navegación
+    if (next && prev) { // Verifica que los botones existan antes de agregar listeners
+        next.addEventListener('click', nextSlide);
+        prev.addEventListener('click', prevSlide);
+    }
+
+    // Cambio automático de slides (opcional)
+    setInterval(nextSlide, 7000); // Cambia cada 7 segundos
+
+    // ... cualquier otra lógica JS, como el scroll suave, si la tienes aquí
+});
+</script>
+

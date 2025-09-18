@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v5.13.8"><title></title><style>.container[data-astro-cid-2zp6q64z]{display:flex}body{background:url(/_astro/admin.CxF-TMRN.jpg);background-size:cover;background-position:center;align-items:center;justify-content:center;min-height:100vh}.navbar[data-astro-cid-2zp6q64z]{background-color:#fff;padding:1rem;box-shadow:0 2px 4px #0000001a}.navbar[data-astro-cid-2zp6q64z] .logo[data-astro-cid-2zp6q64z] h1[data-astro-cid-2zp6q64z]{margin:0;color:#4a90e2;text-align:center}.sidebar[data-astro-cid-2zp6q64z]{width:200px;background-color:#333;color:#fff;padding:1rem;height:100vh}.sidebar[data-astro-cid-2zp6q64z] nav[data-astro-cid-2zp6q64z] ul[data-astro-cid-2zp6q64z]{list-style:none;padding:0;margin:0}.sidebar[data-astro-cid-2zp6q64z] nav[data-astro-cid-2zp6q64z] ul[data-astro-cid-2zp6q64z] li[data-astro-cid-2zp6q64z] a[data-astro-cid-2zp6q64z]{color:#fff;text-decoration:none;display:block;padding:.75rem 1rem;border-radius:4px}.sidebar[data-astro-cid-2zp6q64z] nav[data-astro-cid-2zp6q64z] ul[data-astro-cid-2zp6q64z] li[data-astro-cid-2zp6q64z] a[data-astro-cid-2zp6q64z]:hover{background-color:#555}.content[data-astro-cid-2zp6q64z]{flex-grow:1;padding:2rem;margin-left:200px;margin-top:30px;background:#d9dce0;border-radius:20px}.content-header[data-astro-cid-2zp6q64z]{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}.content[data-astro-cid-2zp6q64z] h2[data-astro-cid-2zp6q64z]{color:#333;margin:0}table[data-astro-cid-2zp6q64z]{width:100%;border-collapse:collapse;box-shadow:0 2px 4px #0000001a}thead[data-astro-cid-2zp6q64z]{background-color:#4a90e2;color:#fff}th[data-astro-cid-2zp6q64z],td[data-astro-cid-2zp6q64z]{padding:.75rem;text-align:left;border-bottom:1px solid #ddd;vertical-align:middle}td[data-astro-cid-2zp6q64z] input[data-astro-cid-2zp6q64z]{width:95%;padding:.5rem;border:1px solid #ccc;border-radius:4px;background:#0069d9}.empleados[data-astro-cid-2zp6q64z]{background:#fff}.action-btn[data-astro-cid-2zp6q64z]{border:none;padding:8px 12px;border-radius:4px;color:#fff;cursor:pointer;font-size:14px}.add-btn[data-astro-cid-2zp6q64z]{background-color:#28a745}.add-btn[data-astro-cid-2zp6q64z]:hover{background-color:#218838}.edit-btn[data-astro-cid-2zp6q64z]{background-color:#ffc107;color:#212529}.edit-btn[data-astro-cid-2zp6q64z]:hover{background-color:#e0a800}.save-btn[data-astro-cid-2zp6q64z]{background-color:#007bff}.save-btn[data-astro-cid-2zp6q64z]:hover{background-color:#0069d9}.delete-btn[data-astro-cid-2zp6q64z]{background-color:#dc3545}.delete-btn[data-astro-cid-2zp6q64z]:hover{background-color:#c82333}
+</style>
+<link rel="stylesheet" href="/_astro/galeria.BkfFH1y6.css"></head> <body class=""> <div id="notification" class="fixed p-4 top-4 right-4 rounded-2xl z-[60] hidden"> <p id="notification-title">Error</p> <p id="notification-description">Hubo un error obteniendo los contactos</p> </div> <nav class="bg-white shadow-md py-2 sticky top-0 z-50"> <div class="container mx-auto flex justify-between items-center px-4 max-w-6xl"> <div class="flex items-center space-x-2"> <img src="/_astro/dientelimpio.ClvDjrlv.png" alt="dientelimpio" class="h-12"> <a class="text-lg font-semibold text-blue-700">sonrisa Perfecta</a> </div> <div id="nav-links" class="flex items-center gap-4"> <div id="nav-user-container"> <p id="nav-user-name"></p> </div> <button id="logout-btn" class="md:hidden flex items-center justify-center p-1 rounded-md bg-white text-indigo-700"> <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path> </svg> </button> <!-- {links.map(link => <a class="hidden md:block text-white no-underline hover:underline" href={link.path}>{link.name}</a>)} --> </div> </div> </nav> <script type="module" src="/_astro/NavigationLogin.astro_astro_type_script_index_0_lang.DVvvHKSQ.js"></script>  <div id="auth-div"> <p id="loading-text">Cargando...</p> <div id="auth-content" class="hidden">  <div class="container" data-astro-cid-2zp6q64z> <aside class="sidebar" data-astro-cid-2zp6q64z> <nav data-astro-cid-2zp6q64z> <ul data-astro-cid-2zp6q64z> <li data-astro-cid-2zp6q64z><a href="/admin" data-astro-cid-2zp6q64z>Horarios</a></li> <li data-astro-cid-2zp6q64z><a href="/inventario" data-astro-cid-2zp6q64z>Inventario</a></li> <li data-astro-cid-2zp6q64z><a href="/citas" data-astro-cid-2zp6q64z>Citas</a></li> </ul> </nav> </aside> <main class="content" id="horarios" data-astro-cid-2zp6q64z> <div class="content-header" data-astro-cid-2zp6q64z> <h2 data-astro-cid-2zp6q64z>Horarios del Personal 👤</h2> <button id="add-personal-btn" class="action-btn add-btn" data-astro-cid-2zp6q64z>Agregar Empleado</button> </div> <table data-astro-cid-2zp6q64z> <thead data-astro-cid-2zp6q64z> <tr data-astro-cid-2zp6q64z> <th data-astro-cid-2zp6q64z>Empleado</th> <th data-astro-cid-2zp6q64z>Lunes</th> <th data-astro-cid-2zp6q64z>Martes</th> <th data-astro-cid-2zp6q64z>Miércoles</th> <th data-astro-cid-2zp6q64z>Jueves</th> <th data-astro-cid-2zp6q64z>Viernes</th> <th data-astro-cid-2zp6q64z>Acciones</th> </tr> </thead> <tbody class="empleados" id="personal-body" data-astro-cid-2zp6q64z> <tr data-astro-cid-2zp6q64z> <td data-editable="true" data-astro-cid-2zp6q64z>Dr. Juan Pérez</td> <td data-editable="true" data-astro-cid-2zp6q64z>9:00 AM - 5:00 PM</td> <td data-editable="true" data-astro-cid-2zp6q64z>9:00 AM - 5:00 PM</td> <td data-editable="true" data-astro-cid-2zp6q64z>Descansa</td> <td data-editable="true" data-astro-cid-2zp6q64z>9:00 AM - 5:00 PM</td> <td data-editable="true" data-astro-cid-2zp6q64z>9:00 AM - 2:00 PM</td> <td data-astro-cid-2zp6q64z> <button class="action-btn edit-btn" data-astro-cid-2zp6q64z>Editar</button> <button class="action-btn delete-btn" data-astro-cid-2zp6q64z>Eliminar</button> </td> </tr> <tr data-astro-cid-2zp6q64z> <td data-editable="true" data-astro-cid-2zp6q64z>Dra. María Rodriguez</td> <td data-editable="true" data-astro-cid-2zp6q64z>9:00 AM - 5:00 PM</td> <td data-editable="true" data-astro-cid-2zp6q64z>Descansa</td> <td data-editable="true" data-astro-cid-2zp6q64z>9:00 AM - 5:00 PM</td> <td data-editable="true" data-astro-cid-2zp6q64z>9:00 AM - 5:00 PM</td> <td data-editable="true" data-astro-cid-2zp6q64z>9:00 AM - 2:00 PM</td> <td data-astro-cid-2zp6q64z> <button class="action-btn edit-btn" data-astro-cid-2zp6q64z>Editar</button> <button class="action-btn delete-btn" data-astro-cid-2zp6q64z>Eliminar</button> </td> </tr> </tbody> </table> </main> </div> </div> </div> <script type="module" src="/_astro/AuthProtected.astro_astro_type_script_index_0_lang.3V1h3DgD.js"></script>  </body></html>  <script is:client-load>
+        // --- Selectores del DOM ---
+        const agregarEmpleadoBtn = document.getElementById('add-personal-btn');
+        const personalFormContainer = document.getElementById('personal-form-container');
+        const cancelAddBtn = document.getElementById('cancel-add-btn');
+        const personalForm = document.getElementById('personal-form'); // El formulario en sí
+        const personalBody = document.getElementById('personal-body'); // El tbody de tu tabla donde van los empleados
+
+        // Campos del formulario
+        const nombreInput = document.getElementById('nombre-empleado');
+        const lunesInput = document.getElementById('horario-lunes');
+        const martesInput = document.getElementById('horario-martes');
+        const miercolesInput = document.getElementById('horario-miercoles');
+        const juevesInput = document.getElementById('horario-jueves');
+        const viernesInput = document.getElementById('horario-viernes');
+
+        // Estado para saber si estamos editando o agregando
+        let editingIndex = -1; // -1 significa que no estamos editando, cualquier otro número es el índice del empleado
+        let personal = [
+            {
+                nombre: 'Dr. Juan Pérez',
+                horario: {
+                    lunes: '9:00 AM - 5:00 PM',
+                    martes: '9:00 AM - 5:00 PM',
+                    miercoles: 'Descansa',
+                    jueves: '9:00 AM - 5:00 PM',
+                    viernes: '9:00 AM - 2:00 PM'
+                }
+            },
+            {
+                nombre: 'Dra. María Rodriguez',
+                horario: {
+                    lunes: '9:00 AM - 5:00 PM',
+                    martes: 'Descansa',
+                    miercoles: '9:00 AM - 5:00 PM',
+                    jueves: '9:00 AM - 5:00 PM',
+                    viernes: '9:00 AM - 2:00 PM'
+                }
+            }
+        ];
+
+        // --- Funciones de Renderizado ---
+        function crearFilaEmpleadoHTML(empleado) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td data-editable="true">${empleado.nombre}</td>
+                <td data-editable="true">${empleado.horario.lunes}</td>
+                <td data-editable="true">${empleado.horario.martes}</td>
+                <td data-editable="true">${empleado.horario.miercoles}</td>
+                <td data-editable="true">${empleado.horario.jueves}</td>
+                <td data-editable="true">${empleado.horario.viernes}</td>
+                <td>
+                    <button class="action-btn edit-btn">Editar</button>
+                    <button class="action-btn delete-btn">Eliminar</button>
+                </td>
+            `;
+            return tr;
+        }
+
+        function renderizarPersonal() {
+            personalBody.innerHTML = ''; // Limpiar el contenido actual de la tabla
+            personal.forEach((empleado, index) => {
+                const fila = crearFilaEmpleadoHTML(empleado);
+                fila.dataset.index = index; // Guardar el índice para facilitar la edición/eliminación
+                personalBody.appendChild(fila);
+            });
+            adjuntarEventosTabla(); // Volver a adjuntar eventos después de renderizar
+        }
+
+        // --- Funciones de Interacción ---
+
+        // Mostrar/Ocultar el formulario
+        agregarEmpleadoBtn.addEventListener('click', () => {
+            personalFormContainer.style.display = 'block'; // Mostrar el formulario
+            personalForm.reset(); // Limpiar el formulario
+            document.querySelector('#personal-form h3').textContent = 'Agregar Nuevo Empleado';
+            editingIndex = -1; // Resetear el índice de edición
+        });
+
+        cancelAddBtn.addEventListener('click', () => {
+            personalFormContainer.style.display = 'none'; // Ocultar el formulario
+        });
+
+        // Manejar el envío del formulario (agregar/editar)
+        personalForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Evitar el envío por defecto del formulario
+
+            const nuevoEmpleado = {
+                nombre: nombreInput.value,
+                horario: {
+                    lunes: lunesInput.value,
+                    martes: martesInput.value,
+                    miercoles: miercolesInput.value,
+                    jueves: juevesInput.value,
+                    viernes: viernesInput.value
+                }
+            };
+
+            if (editingIndex === -1) {
+                // Modo de agregar
+                personal.push(nuevoEmpleado);
+            } else {
+                // Modo de editar
+                personal[editingIndex] = nuevoEmpleado;
+            }
+
+            renderizarPersonal(); // Actualizar la tabla
+            personalFormContainer.style.display = 'none'; // Ocultar el formulario
+        });
+
+        // Adjuntar eventos a los botones de editar y eliminar (Delegación de Eventos)
+        function adjuntarEventosTabla() {
+            personalBody.addEventListener('click', (event) => {
+                const target = event.target;
+
+                // --- Editar Empleado ---
+                if (target.classList.contains('edit-btn')) {
+                    const row = target.closest('tr');
+                    editingIndex = parseInt(row.dataset.index); // Obtener el índice del empleado
+                    const empleadoAEditar = personal[editingIndex];
+
+                    // Rellenar el formulario con los datos del empleado
+                    nombreInput.value = empleadoAEditar.nombre;
+                    lunesInput.value = empleadoAEditar.horario.lunes;
+                    martesInput.value = empleadoAEditar.horario.martes;
+                    miercolesInput.value = empleadoAEditar.horario.miercoles;
+                    juevesInput.value = empleadoAEditar.horario.jueves;
+                    viernesInput.value = empleadoAEditar.horario.viernes;
+
+                    document.querySelector('#personal-form h3').textContent = 'Editar Empleado';
+                    personalFormContainer.style.display = 'block'; // Mostrar el formulario
+                }
+
+                // --- Eliminar Empleado ---
+                if (target.classList.contains('delete-btn')) {
+                    const row = target.closest('tr');
+                    const indexToDelete = parseInt(row.dataset.index);
+
+                    if (confirm('¿Estás seguro de que quieres eliminar a este empleado?')) {
+                        personal.splice(indexToDelete, 1); // Eliminar el empleado del array
+                        renderizarPersonal(); // Volver a renderizar la tabla
+                    }
+                }
+            });
+        }
+        
+        // --- Inicialización ---
+        renderizarPersonal(); // Cargar los empleados iniciales al cargar la página
+    </script>
