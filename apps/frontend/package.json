@@ -17,6 +17,7 @@
     "express": "^5.1.0",
     "ky": "^1.8.1",
     "nanostores": "^1.0.1",
+    "pg": "^8.16.3",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.1.10"
