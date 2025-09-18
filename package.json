@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "npm run start --workspace=server",
+    "start": "cd apps/backend && npm start",
+    "build": "cd apps/backend && npm run build",
     "client:dev": "npm run dev --workspace=client",
     "server:dev": "npm run dev --workspace=server",
-    "server:prod": "npm run prod --workspace=server",
-    "build:client": "rm -rf apps/backend/dist && npm run build --workspace=client && cp -r apps/frontend/dist/ apps/backend/dist"
+    "install:all": "npm install && npm run install:backend",
+    "install:backend": "cd apps/backend && npm install"
   },
   "workspaces": [
     "apps/*"
