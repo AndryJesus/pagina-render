@@ -58,12 +58,21 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
     <script>
-        // Configuración del WebSocket - URL de tu bot en Render
+        // Configuración del WebSocket - URL CORRECTA de tu bot en Render
         const WS_SERVER_URL = 'https://proyecto-bot-gbbo.onrender.com';
         let socket = null;
         let connectionStatus = document.getElementById('connectionStatus');
         let statusDot = connectionStatus.querySelector('.status-dot');
         let statusText = connectionStatus.querySelector('.status-text');
+        
+        // Debugging inicial
+        console.log('🔄 URL de conexión:', WS_SERVER_URL);
+        console.log('📍 Host actual:', window.location.hostname);
+        
+        // Verificar si estamos en producción
+        const isProduction = window.location.hostname !== 'localhost' && 
+                            window.location.hostname !== '127.0.0.1';
+        console.log('🏭 Entorno:', isProduction ? 'Producción' : 'Desarrollo');
         
         // Almacenamiento de todas las citas
         let allAppointments = [];
@@ -211,13 +220,18 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         function connectWebSocket() {
             try {
                 if (typeof io !== 'undefined') {
+                    console.log('🔗 Intentando conectar a:', WS_SERVER_URL);
+                    
                     socket = io(WS_SERVER_URL, {
                         transports: ['websocket', 'polling'],
-                        withCredentials: true
+                        withCredentials: true,
+                        reconnection: true,
+                        reconnectionAttempts: 10,
+                        reconnectionDelay: 2000
                     });
                     
                     socket.on('connect', () => {
-                        console.log('Conectado al servidor de WebSockets:', WS_SERVER_URL);
+                        console.log('✅ Conectado al servidor de WebSockets:', WS_SERVER_URL);
                         updateConnectionStatus(true, 'Conectado en tiempo real');
                         
                         // Solicitar todas las citas al conectar
@@ -286,8 +300,8 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                     });
                     
                     socket.on('connect_error', (error) => {
-                        console.error('Error de conexión:', error);
-                        updateConnectionStatus(false, 'Error de conexión');
+                        console.error('Error de conexión:', error.message);
+                        updateConnectionStatus(false, 'Error de conexión: ' + error.message);
                     });
                 } else {
                     console.error('Socket.io no está disponible');
