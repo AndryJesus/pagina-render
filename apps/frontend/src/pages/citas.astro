@@ -58,8 +58,8 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
     <script>
-        // Configuración del WebSocket - PUERTO 3002
-        const WS_SERVER_URL = 'http://localhost:3002';
+        // Configuración del WebSocket - URL de tu bot en Render
+        const WS_SERVER_URL = 'https://proyecto-bot-gbbo.onrender.com';
         let socket = null;
         let connectionStatus = document.getElementById('connectionStatus');
         let statusDot = connectionStatus.querySelector('.status-dot');
@@ -211,10 +211,13 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         function connectWebSocket() {
             try {
                 if (typeof io !== 'undefined') {
-                    socket = io(WS_SERVER_URL);
+                    socket = io(WS_SERVER_URL, {
+                        transports: ['websocket', 'polling'],
+                        withCredentials: true
+                    });
                     
                     socket.on('connect', () => {
-                        console.log('Conectado al servidor de WebSockets en puerto 3002');
+                        console.log('Conectado al servidor de WebSockets:', WS_SERVER_URL);
                         updateConnectionStatus(true, 'Conectado en tiempo real');
                         
                         // Solicitar todas las citas al conectar
