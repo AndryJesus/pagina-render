@@ -58,7 +58,7 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
     <script>
-        // Configuración del WebSocket - PUERTO 3002
+        // 🚨 CORRECCIÓN: Conectar al DOMINIO principal sin puerto específico
         const WS_SERVER_URL = 'https://proyecto-bot-gbbo.onrender.com';
         let socket = null;
         let connectionStatus = document.getElementById('connectionStatus');
@@ -199,31 +199,25 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             saveAppointmentsToStorage();
         }
 
-        // Función para cargar todas las citas desde el servidor
-        function loadAllAppointmentsFromServer() {
-            if (socket && socket.connected) {
-                console.log('Solicitando todas las citas al servidor...');
-                // El servidor envía automáticamente todas las citas al conectar
-            }
-        }
-
         // Función para conectar al servidor de WebSockets
         function connectWebSocket() {
             try {
                 if (typeof io !== 'undefined') {
-                    socket = io(WS_SERVER_URL);
+                    console.log('🔗 Conectando a:', WS_SERVER_URL);
+                    
+                    socket = io(WS_SERVER_URL, {
+                        transports: ['websocket', 'polling'],
+                        timeout: 10000
+                    });
                     
                     socket.on('connect', () => {
-                        console.log('Conectado al servidor de WebSockets en puerto 3002');
+                        console.log('✅ Conectado al servidor de WebSockets');
                         updateConnectionStatus(true, 'Conectado en tiempo real');
-                        
-                        // Solicitar todas las citas al conectar
-                        loadAllAppointmentsFromServer();
                     });
                     
                     // Evento para recibir todas las citas existentes
                     socket.on('allAppointments', (appointmentsData) => {
-                        console.log('Recibidas todas las citas:', appointmentsData.length);
+                        console.log('📊 Recibidas todas las citas:', appointmentsData.length);
                         allAppointments = appointmentsData;
                         renderAppointments(allAppointments);
                         saveAppointmentsToStorage();
@@ -231,14 +225,14 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                     
                     // Evento para recibir una nueva cita
                     socket.on('newAppointment', (appointmentData) => {
-                        console.log('Nueva cita recibida:', appointmentData);
+                        console.log('🆕 Nueva cita recibida:', appointmentData);
                         upsertAppointment(appointmentData);
                         showNotification(`Nueva cita de ${appointmentData.patient_name}`);
                     });
                     
                     // Evento para recibir confirmación de cita
                     socket.on('appointmentConfirmed', (appointmentData) => {
-                        console.log('Cita confirmada:', appointmentData);
+                        console.log('✅ Cita confirmada:', appointmentData);
                         
                         // Actualizar la cita en nuestra lista local
                         const index = allAppointments.findIndex(a => a.id === appointmentData.id);
@@ -253,7 +247,7 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                     
                     // Evento para recibir resultado de confirmación
                     socket.on('confirmationResult', (result) => {
-                        console.log('Resultado de confirmación:', result);
+                        console.log('📋 Resultado de confirmación:', result);
                         if (result.success) {
                             showNotification(`Cita ${result.appointmentId} confirmada exitosamente`);
                             
@@ -278,20 +272,24 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                     });
                     
                     socket.on('disconnect', () => {
-                        console.log('Desconectado del servidor de WebSockets');
+                        console.log('❌ Desconectado del servidor de WebSockets');
                         updateConnectionStatus(false, 'Desconectado - Intentando reconectar...');
                     });
                     
                     socket.on('connect_error', (error) => {
-                        console.error('Error de conexión:', error);
+                        console.error('❌ Error de conexión:', error);
                         updateConnectionStatus(false, 'Error de conexión');
                     });
+                    
+                    socket.on('error', (error) => {
+                        console.error('❌ Error de Socket.io:', error);
+                    });
                 } else {
-                    console.error('Socket.io no está disponible');
+                    console.error('❌ Socket.io no está disponible');
                     updateConnectionStatus(false, 'Error: Socket.io no cargado');
                 }
             } catch (error) {
-                console.error('Error al inicializar WebSocket:', error);
+                console.error('❌ Error al inicializar WebSocket:', error);
                 updateConnectionStatus(false, 'Error de conexión');
             }
         }
@@ -299,7 +297,7 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         // Función para confirmar una cita
         function confirmAppointment(appointmentId) {
             if (socket && socket.connected) {
-                console.log(`Enviando confirmación para cita ID: ${appointmentId}`);
+                console.log(`📨 Enviando confirmación para cita ID: ${appointmentId}`);
                 
                 // Actualizar visualmente inmediatamente
                 const index = allAppointments.findIndex(a => a.id == appointmentId);
@@ -311,14 +309,14 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                 // Enviar confirmación al servidor
                 socket.emit('confirmAppointment', appointmentId);
             } else {
-                showNotification('Error: No hay conexión con el servidor');
+                showNotification('❌ Error: No hay conexión con el servidor');
+                console.error('No se puede enviar confirmación - Socket no conectado');
             }
         }
 
         // Función para cancelar una cita
         function cancelAppointment(appointmentId) {
-            // Esta función necesitaría implementarse en el backend
-            showNotification('Función de cancelación no implementada aún');
+            showNotification('⚠️ Función de cancelación no implementada aún');
         }
 
         // Función para mostrar notificación
@@ -340,8 +338,20 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                     z-index: 1000;
                     opacity: 0;
                     transition: opacity 0.3s;
+                    max-width: 300px;
+                    word-wrap: break-word;
                 `;
                 document.body.appendChild(notification);
+            }
+            
+            // Cambiar color según el tipo de mensaje
+            if (message.includes('❌') || message.includes('Error')) {
+                notification.style.background = '#dc3545';
+            } else if (message.includes('⚠️')) {
+                notification.style.background = '#ffc107';
+                notification.style.color = '#000';
+            } else {
+                notification.style.background = '#4CAF50';
             }
             
             notification.textContent = message;
@@ -372,12 +382,10 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             renderAppointments(filteredAppointments);
         }
 
-        // Hacer las funciones globales para que estén disponibles
-        window.confirmAppointment = confirmAppointment;
-        window.cancelAppointment = cancelAppointment;
-
         // Inicializar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Inicializando gestor de citas...');
+            
             // Cargar citas existentes desde almacenamiento local
             loadAppointmentsFromStorage();
             
@@ -390,6 +398,7 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             });
             
             document.getElementById('btnRefresh').addEventListener('click', () => {
+                console.log('🔄 Actualizando citas...');
                 if (socket && socket.connected) {
                     // Forzar reconexión para obtener datos frescos
                     socket.disconnect();
@@ -403,10 +412,10 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             document.getElementById('searchInput').addEventListener('input', filterAppointments);
             document.getElementById('statusFilter').addEventListener('change', filterAppointments);
             
-            // Intentar reconexión cada 10 segundos
+            // Intentar reconexión cada 10 segundos si está desconectado
             setInterval(() => {
                 if (!socket || !socket.connected) {
-                    console.log('Intentando reconectar...');
+                    console.log('🔄 Intentando reconectar...');
                     connectWebSocket();
                 }
             }, 10000);
