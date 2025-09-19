@@ -17,6 +17,10 @@ app.use(cors({ credentials: true, origin: ['http://localhost:4321'] }));
 app.use(express.json());
 app.use(cookieParser());
 
+app.get('/', (req, res) => {
+  res.json({ hola: 'mundo' });
+});
+
 app.use('/api/contacts', authenticateUser, contactsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/auth', authRouter);

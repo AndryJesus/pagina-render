@@ -1,6 +1,6 @@
-POST  http://localhost:3001/api/users
+POST  http://localhost:3000/api/users
 Content-Type: application/json
 {
-  "email": "andryjescobar@gmail.com",
-  "password": "Carteluo1$"
+  "email": "gabitodev@gmail.com",
+  "password": "carteluo1$"
 }
