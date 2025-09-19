@@ -39,22 +39,6 @@ const findByEmail = async (payload) => {
   return response.rows[0];
 };
 
-const updatePassword = async (payload) => {
-  const response = await db.query(
-    `
-    UPDATE users
-    SET verify_email = true
-    WHERE id = $1
-    RETURNING *
-  `,
-    [payload.id],
-  );
-  if (response.rowCount === 0) {
-    throw new ErrorWithStatus(400, 'Token malformado');
-  }
-  return response.rows[0];
-};
-
-const usersRepository = { addOne, verifyOne, findByEmail, updatePassword };
+const usersRepository = { addOne, verifyOne, findByEmail };
 
 export default usersRepository;
