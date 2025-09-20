@@ -21,14 +21,6 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                 <span class="status-text">Conectando...</span>
             </div>
             
-            <!-- Sección para mostrar el QR -->
-            <div id="qrSection" style="display: none; margin-bottom: 20px; text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                <h3>Escanea el código QR para conectar WhatsApp</h3>
-                <div id="qrContainer"></div>
-                <p>Después de escanear, el bot estará disponible para recibir citas</p>
-                <button id="btnCheckStatus" class="btn btn-secondary">Verificar estado</button>
-            </div>
-            
             <!-- Filtros y búsqueda -->
             <div class="filters-container">
                 <input type="text" id="searchInput" placeholder="Buscar por nombre o teléfono..." class="search-input">
@@ -62,19 +54,17 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         </div>
     </div>
 
-    <!-- Cargar socket.io-client y qrcode desde CDN -->
+    <!-- Cargar socket.io-client desde CDN -->
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
-    <script>
-        // 🚨 CORRECCIÓN: Conectar al DOMINIO principal de tu bot en Render
-        const WS_SERVER_URL = 'https://proyecto-bot-gbbo.onrender.com';
+    <!-- Script con is:inline para que Astro no lo procese -->
+    <script is:inline>
+        // 🚨 CORRECCIÓN: Conectar a tu bot LOCAL
+        const WS_SERVER_URL = 'http://localhost:3001';
         let socket = null;
         let connectionStatus = document.getElementById('connectionStatus');
         let statusDot = connectionStatus.querySelector('.status-dot');
         let statusText = connectionStatus.querySelector('.status-text');
-        let qrSection = document.getElementById('qrSection');
-        let qrContainer = document.getElementById('qrContainer');
         
         // Almacenamiento de todas las citas
         let allAppointments = [];
@@ -122,30 +112,9 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             if (connected) {
                 statusDot.classList.add('connected');
                 statusText.textContent = message || 'Conectado en tiempo real';
-                qrSection.style.display = 'none';
             } else {
                 statusDot.classList.remove('connected');
                 statusText.textContent = message || 'Desconectado';
-            }
-        }
-
-        // Función para mostrar/ocultar la sección QR
-        function toggleQRSection(show, qrData = null) {
-            if (show) {
-                qrSection.style.display = 'block';
-                if (qrData && typeof QRCode !== 'undefined') {
-                    qrContainer.innerHTML = '';
-                    QRCode.toCanvas(qrData, {
-                        width: 200,
-                        height: 200,
-                        margin: 1
-                    }, function(error, canvas) {
-                        if (error) console.error(error);
-                        qrContainer.appendChild(canvas);
-                    });
-                }
-            } else {
-                qrSection.style.display = 'none';
             }
         }
 
@@ -245,15 +214,6 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                     socket.on('connect', () => {
                         console.log('✅ Conectado al servidor de WebSockets');
                         updateConnectionStatus(true, 'Conectado en tiempo real');
-                    });
-                    
-                    // Evento para recibir el código QR
-                    socket.on('qrCode', (qrData) => {
-                        console.log('📱 QR recibido:', qrData);
-                        if (qrData && qrData.qr) {
-                            toggleQRSection(true, qrData.qr);
-                            updateConnectionStatus(false, 'Esperando escaneo de QR...');
-                        }
                     });
                     
                     // Evento para recibir todas las citas existentes
@@ -449,16 +409,6 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                 }
             });
             
-            document.getElementById('btnCheckStatus').addEventListener('click', () => {
-                console.log('🔍 Verificando estado del bot...');
-                if (socket && socket.connected) {
-                    // Solicitar estado actual del bot
-                    socket.emit('checkBotStatus');
-                } else {
-                    connectWebSocket();
-                }
-            });
-            
             // Configurar filtros
             document.getElementById('searchInput').addEventListener('input', filterAppointments);
             document.getElementById('statusFilter').addEventListener('change', filterAppointments);
@@ -472,246 +422,246 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             }, 10000);
         });
     </script>
+
+    <style>
+        body {
+            background: url('/src/assets/admin.jpg');
+            background-size: cover;
+            background-position: center;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .container-2 {
+            flex: 1;
+            margin-top: 5%;
+            margin-left: 200px;
+            background: rgb(217, 220, 224);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-right: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .filters-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #3d87d7;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2a6fc7;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #dc3545;
+            margin-right: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .status-dot.connected {
+            background-color: #28a745;
+        }
+
+        .table-excel {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: white;
+        }
+
+        .table-excel th,
+        .table-excel td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .table-excel thead {
+            background-color: #3d87d7;
+            color: #ffffff;
+        }
+
+        .table-excel th {
+            font-weight: 600;
+        }
+
+        .table-excel tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        .table-excel tbody tr:hover {
+            background-color: #e9ecef;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .status-badge.pending {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .status-badge.confirmed {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-badge.cancelled {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .actions-cell {
+            min-width: 180px;
+        }
+
+        .no-actions {
+            color: #6c757d;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        .new-appointment {
+            animation: highlight 3s ease;
+        }
+
+        @keyframes highlight {
+            0% { background-color: rgba(40, 167, 69, 0.5); }
+            100% { background-color: transparent; }
+        }
+
+        /* Barra Lateral */
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar nav ul li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar nav ul li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar nav ul li a:hover {
+            background-color: #555;
+        }
+    </style>
 </LayoutLogin>
-
-<style>
-body {
-    background: url('/src/assets/admin.jpg');
-    background-size: cover;
-    background-position: center;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-}
-
-.container {
-    display: flex;
-    min-height: 100vh;
-}
-
-.container-2 {
-    flex: 1;
-    margin-top: 5%;
-    margin-left: 200px;
-    background: rgb(217, 220, 224);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    margin-right: 20px;
-}
-
-h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.connection-status {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    padding: 8px 12px;
-    background: #f8f9fa;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.filters-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-}
-
-.search-input {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    flex: 1;
-    min-width: 200px;
-}
-
-.filter-select {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: white;
-}
-
-.btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    margin-right: 5px;
-    transition: background-color 0.3s;
-}
-
-.btn-primary {
-    background-color: #3d87d7;
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: #2a6fc7;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-}
-
-.status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: #dc3545;
-    margin-right: 8px;
-    transition: background-color 0.3s;
-}
-
-.status-dot.connected {
-    background-color: #28a745;
-}
-
-.table-excel {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    background: white;
-}
-
-.table-excel th,
-.table-excel td {
-    padding: 12px 15px;
-    text-align: left;
-    border: 1px solid #ddd;
-}
-
-.table-excel thead {
-    background-color: #3d87d7;
-    color: #ffffff;
-}
-
-.table-excel th {
-    font-weight: 600;
-}
-
-.table-excel tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
-}
-
-.table-excel tbody tr:hover {
-    background-color: #e9ecef;
-}
-
-.btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: #c82333;
-}
-
-.btn-success {
-    background-color: #28a745;
-    color: white;
-}
-
-.btn-success:hover {
-    background-color: #218838;
-}
-
-.btn-sm {
-    padding: 5px 10px;
-    font-size: 12px;
-}
-
-.status-badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 500;
-    display: inline-block;
-    min-width: 80px;
-    text-align: center;
-}
-
-.status-badge.pending {
-    background-color: #ffc107;
-    color: #212529;
-}
-
-.status-badge.confirmed {
-    background-color: #28a745;
-    color: white;
-}
-
-.status-badge.cancelled {
-    background-color: #dc3545;
-    color: white;
-}
-
-.actions-cell {
-    min-width: 180px;
-}
-
-.no-actions {
-    color: #6c757d;
-    font-style: italic;
-    font-size: 12px;
-}
-
-.new-appointment {
-    animation: highlight 3s ease;
-}
-
-@keyframes highlight {
-    0% { background-color: rgba(40, 167, 69, 0.5); }
-    100% { background-color: transparent; }
-}
-
-/* Barra Lateral */
-.sidebar {
-    width: 200px;
-    background-color: #333;
-    color: white;
-    padding: 1rem;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-}
-
-.sidebar nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.sidebar nav ul li {
-    margin-bottom: 10px;
-}
-
-.sidebar nav ul li a {
-    color: white;
-    text-decoration: none;
-    display: block;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-}
-
-.sidebar nav ul li a:hover {
-    background-color: #555;
-}
-</style>
