@@ -21,6 +21,14 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                 <span class="status-text">Conectando...</span>
             </div>
             
+            <!-- Sección para mostrar el QR -->
+            <div id="qrSection" style="display: none; margin-bottom: 20px; text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <h3>Escanea el código QR para conectar WhatsApp</h3>
+                <div id="qrContainer"></div>
+                <p>Después de escanear, el bot estará disponible para recibir citas</p>
+                <button id="btnCheckStatus" class="btn btn-secondary">Verificar estado</button>
+            </div>
+            
             <!-- Filtros y búsqueda -->
             <div class="filters-container">
                 <input type="text" id="searchInput" placeholder="Buscar por nombre o teléfono..." class="search-input">
@@ -54,16 +62,19 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         </div>
     </div>
 
-    <!-- Cargar socket.io-client desde CDN -->
+    <!-- Cargar socket.io-client y qrcode desde CDN -->
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 
     <script>
-        // 🚨 CORRECCIÓN: Conectar al DOMINIO principal sin puerto específico
+        // 🚨 CORRECCIÓN: Conectar al DOMINIO principal de tu bot en Render
         const WS_SERVER_URL = 'https://proyecto-bot-gbbo.onrender.com';
         let socket = null;
         let connectionStatus = document.getElementById('connectionStatus');
         let statusDot = connectionStatus.querySelector('.status-dot');
         let statusText = connectionStatus.querySelector('.status-text');
+        let qrSection = document.getElementById('qrSection');
+        let qrContainer = document.getElementById('qrContainer');
         
         // Almacenamiento de todas las citas
         let allAppointments = [];
@@ -111,9 +122,30 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             if (connected) {
                 statusDot.classList.add('connected');
                 statusText.textContent = message || 'Conectado en tiempo real';
+                qrSection.style.display = 'none';
             } else {
                 statusDot.classList.remove('connected');
                 statusText.textContent = message || 'Desconectado';
+            }
+        }
+
+        // Función para mostrar/ocultar la sección QR
+        function toggleQRSection(show, qrData = null) {
+            if (show) {
+                qrSection.style.display = 'block';
+                if (qrData && typeof QRCode !== 'undefined') {
+                    qrContainer.innerHTML = '';
+                    QRCode.toCanvas(qrData, {
+                        width: 200,
+                        height: 200,
+                        margin: 1
+                    }, function(error, canvas) {
+                        if (error) console.error(error);
+                        qrContainer.appendChild(canvas);
+                    });
+                }
+            } else {
+                qrSection.style.display = 'none';
             }
         }
 
@@ -213,6 +245,15 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                     socket.on('connect', () => {
                         console.log('✅ Conectado al servidor de WebSockets');
                         updateConnectionStatus(true, 'Conectado en tiempo real');
+                    });
+                    
+                    // Evento para recibir el código QR
+                    socket.on('qrCode', (qrData) => {
+                        console.log('📱 QR recibido:', qrData);
+                        if (qrData && qrData.qr) {
+                            toggleQRSection(true, qrData.qr);
+                            updateConnectionStatus(false, 'Esperando escaneo de QR...');
+                        }
                     });
                     
                     // Evento para recibir todas las citas existentes
@@ -403,6 +444,16 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                     // Forzar reconexión para obtener datos frescos
                     socket.disconnect();
                     socket.connect();
+                } else {
+                    connectWebSocket();
+                }
+            });
+            
+            document.getElementById('btnCheckStatus').addEventListener('click', () => {
+                console.log('🔍 Verificando estado del bot...');
+                if (socket && socket.connected) {
+                    // Solicitar estado actual del bot
+                    socket.emit('checkBotStatus');
                 } else {
                     connectWebSocket();
                 }
