@@ -58,7 +58,7 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
     <script>
-        // 🚨 CORRECCIÓN: Conectar al DOMINIO principal sin puerto específico
+        // 🚨 CORRECCIÓN: Usar el mismo dominio que tu bot
         const WS_SERVER_URL = 'https://proyecto-bot-gbbo.onrender.com';
         let socket = null;
         let connectionStatus = document.getElementById('connectionStatus');
@@ -68,6 +68,27 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         // Almacenamiento de todas las citas
         let allAppointments = [];
         
+        // Función para verificar la conexión al servidor
+        async function checkServerConnection() {
+            try {
+                const response = await fetch(`${WS_SERVER_URL}/health`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Servidor disponible:', data);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('❌ Servidor no disponible:', error);
+                return false;
+            }
+        }
+
         // Cargar citas desde localStorage al iniciar
         function loadAppointmentsFromStorage() {
             try {
@@ -88,6 +109,48 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                 localStorage.setItem('appointments', JSON.stringify(allAppointments));
             } catch (error) {
                 console.error('Error al guardar citas en almacenamiento:', error);
+            }
+        }
+
+        // Función para cargar citas desde el servidor via HTTP
+        async function loadAppointmentsFromServer() {
+            try {
+                console.log('📡 Intentando cargar citas desde el servidor...');
+                
+                // Primero verificar si el servidor está disponible
+                const isServerAvailable = await checkServerConnection();
+                
+                if (!isServerAvailable) {
+                    console.log('⚠️  Servidor no disponible, usando datos locales');
+                    loadAppointmentsFromStorage();
+                    return;
+                }
+                
+                // Intentar cargar citas via HTTP como fallback
+                try {
+                    const response = await fetch(`${WS_SERVER_URL}/api/appointments`, {
+                        method: 'GET',
+                        mode: 'cors',
+                        credentials: 'include'
+                    });
+                    
+                    if (response.ok) {
+                        const appointments = await response.json();
+                        allAppointments = appointments;
+                        renderAppointments(allAppointments);
+                        saveAppointmentsToStorage();
+                        console.log('✅ Citas cargadas desde servidor HTTP');
+                    } else {
+                        throw new Error('HTTP error: ' + response.status);
+                    }
+                } catch (httpError) {
+                    console.log('⚠️  Fallback HTTP no disponible, usando datos locales');
+                    loadAppointmentsFromStorage();
+                }
+                
+            } catch (error) {
+                console.error('❌ Error al cargar citas del servidor:', error);
+                loadAppointmentsFromStorage();
             }
         }
 
@@ -203,16 +266,23 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         function connectWebSocket() {
             try {
                 if (typeof io !== 'undefined') {
-                    console.log('🔗 Conectando a:', WS_SERVER_URL);
+                    console.log('🔗 Conectando a WebSocket:', WS_SERVER_URL);
                     
                     socket = io(WS_SERVER_URL, {
                         transports: ['websocket', 'polling'],
-                        timeout: 10000
+                        timeout: 10000,
+                        withCredentials: true,
+                        reconnection: true,
+                        reconnectionAttempts: 10,
+                        reconnectionDelay: 1000
                     });
                     
                     socket.on('connect', () => {
                         console.log('✅ Conectado al servidor de WebSockets');
                         updateConnectionStatus(true, 'Conectado en tiempo real');
+                        
+                        // Solicitar todas las citas al conectarse
+                        socket.emit('getAllAppointments');
                     });
                     
                     // Evento para recibir todas las citas existentes
@@ -311,6 +381,13 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             } else {
                 showNotification('❌ Error: No hay conexión con el servidor');
                 console.error('No se puede enviar confirmación - Socket no conectado');
+                
+                // Revertir el cambio visual
+                const index = allAppointments.findIndex(a => a.id == appointmentId);
+                if (index !== -1) {
+                    allAppointments[index].status = 'pending';
+                    renderAppointments(allAppointments);
+                }
             }
         }
 
@@ -383,11 +460,11 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         }
 
         // Inicializar cuando el DOM esté listo
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 Inicializando gestor de citas...');
             
-            // Cargar citas existentes desde almacenamiento local
-            loadAppointmentsFromStorage();
+            // Cargar citas existentes desde el servidor o almacenamiento local
+            await loadAppointmentsFromServer();
             
             // Conectar al WebSocket
             connectWebSocket();
@@ -397,14 +474,19 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                 alert('Para agregar citas manualmente, necesitas implementar un formulario con conexión a tu backend');
             });
             
-            document.getElementById('btnRefresh').addEventListener('click', () => {
+            document.getElementById('btnRefresh').addEventListener('click', async () => {
                 console.log('🔄 Actualizando citas...');
-                if (socket && socket.connected) {
-                    // Forzar reconexión para obtener datos frescos
-                    socket.disconnect();
-                    socket.connect();
-                } else {
+                showNotification('Actualizando citas...');
+                
+                // Recargar citas desde el servidor
+                await loadAppointmentsFromServer();
+                
+                // Reconectar WebSocket si es necesario
+                if (!socket || !socket.connected) {
                     connectWebSocket();
+                } else {
+                    // Solicitar citas actualizadas via WebSocket
+                    socket.emit('getAllAppointments');
                 }
             });
             
@@ -413,10 +495,17 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             document.getElementById('statusFilter').addEventListener('change', filterAppointments);
             
             // Intentar reconexión cada 10 segundos si está desconectado
-            setInterval(() => {
+            setInterval(async () => {
                 if (!socket || !socket.connected) {
-                    console.log('🔄 Intentando reconectar...');
-                    connectWebSocket();
+                    console.log('🔄 Intentando reconectar WebSocket...');
+                    
+                    // Verificar primero si el servidor está disponible
+                    const isServerAvailable = await checkServerConnection();
+                    if (isServerAvailable) {
+                        connectWebSocket();
+                    } else {
+                        console.log('❌ Servidor no disponible, reintentando en 10 segundos...');
+                    }
                 }
             }, 10000);
         });
@@ -444,11 +533,12 @@ body {
     flex: 1;
     margin-top: 5%;
     margin-left: 200px;
-    background: rgb(217, 220, 224);
+    background: rgba(217, 220, 224, 0.95);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     margin-right: 20px;
+    backdrop-filter: blur(5px);
 }
 
 h1 {
@@ -465,6 +555,7 @@ h1 {
     background: #f8f9fa;
     border-radius: 4px;
     font-size: 14px;
+    border: 1px solid #dee2e6;
 }
 
 .filters-container {
@@ -472,6 +563,7 @@ h1 {
     gap: 10px;
     margin-bottom: 15px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .search-input {
@@ -536,6 +628,7 @@ h1 {
     border-collapse: collapse;
     margin-bottom: 20px;
     background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .table-excel th,
@@ -555,7 +648,7 @@ h1 {
 }
 
 .table-excel tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
+    background-color: #f8f9fa;
 }
 
 .table-excel tbody tr:hover {
@@ -662,5 +755,32 @@ h1 {
 
 .sidebar nav ul li a:hover {
     background-color: #555;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    
+    .container-2 {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    
+    .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-input {
+        min-width: auto;
+    }
 }
 </style>
