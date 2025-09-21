@@ -58,20 +58,23 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
     <script>
-        // 🚨 SOLUCIÓN DEFINITIVA: Configuración explícita
+        // Configuración
         const BOT_SERVER_URL = 'https://proyecto-bot-gbbo.onrender.com';
+        const FRONTEND_URL = 'https://pagina-render-wtbx.onrender.com';
         
         console.log('🚀 Iniciando frontend de citas');
-        console.log('📍 Host actual:', window.location.hostname);
-        console.log('🔗 Conectando a bot:', BOT_SERVER_URL);
+        console.log('🌍 Frontend URL:', FRONTEND_URL);
+        console.log('🔗 Bot Server URL:', BOT_SERVER_URL);
         
         let socket = null;
         let connectionStatus = document.getElementById('connectionStatus');
         let statusDot = connectionStatus.querySelector('.status-dot');
         let statusText = connectionStatus.querySelector('.status-text');
         let serverUrlSpan = document.getElementById('serverUrl');
+        let connectionState = document.getElementById('connectionState');
+        let connectionInfo = document.getElementById('connectionInfo');
         
-        // Mostrar URL del servidor en la UI
+        // Mostrar información de conexión
         serverUrlSpan.textContent = BOT_SERVER_URL;
         
         // Almacenamiento de todas las citas
@@ -80,25 +83,41 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         // Función para verificar la conexión al servidor
         async function checkServerConnection() {
             try {
+                connectionState.textContent = 'Estado: Verificando servidor...';
                 console.log('🔍 Verificando conexión con el servidor...');
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
                 const response = await fetch(`${BOT_SERVER_URL}/health`, {
                     method: 'GET',
                     mode: 'cors',
+                    signal: controller.signal,
                     headers: {
                         'Accept': 'application/json'
                     }
                 });
                 
+                clearTimeout(timeoutId);
+                
                 if (response.ok) {
                     const data = await response.json();
                     console.log('✅ Servidor disponible:', data);
+                    connectionState.textContent = 'Estado: Servidor disponible ✅';
                     return true;
                 } else {
                     console.warn('⚠️  Servidor respondió con error:', response.status);
+                    connectionState.textContent = `Estado: Error del servidor (${response.status}) ⚠️`;
                     return false;
                 }
             } catch (error) {
-                console.error('❌ Error al conectar con el servidor:', error.message);
+                if (error.name === 'AbortError') {
+                    console.error('❌ Timeout al conectar con el servidor');
+                    connectionState.textContent = 'Estado: Timeout del servidor ❌';
+                } else {
+                    console.error('❌ Error al conectar con el servidor:', error.message);
+                    connectionState.textContent = 'Estado: Error de conexión ❌';
+                }
                 return false;
             }
         }
@@ -121,20 +140,11 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             }
         }
         
-        // Guardar citas en localStorage
-        function saveAppointmentsToStorage() {
-            try {
-                localStorage.setItem('appointments', JSON.stringify(allAppointments));
-                console.log('💾 Citas guardadas en almacenamiento local');
-            } catch (error) {
-                console.error('Error al guardar citas en almacenamiento:', error);
-            }
-        }
-
         // Función para cargar citas desde el servidor via HTTP
         async function loadAppointmentsFromServer() {
             try {
                 console.log('📡 Intentando cargar citas desde el servidor...');
+                connectionState.textContent = 'Estado: Cargando citas...';
                 
                 // Primero verificar si el servidor está disponible
                 const isServerAvailable = await checkServerConnection();
@@ -142,7 +152,7 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                 if (!isServerAvailable) {
                     console.log('⚠️  Servidor no disponible, usando datos locales');
                     loadAppointmentsFromStorage();
-                    updateConnectionStatus(false, 'Servidor no disponible - Usando datos locales');
+                    updateConnectionStatus(false, 'Servidor no disponible - Modo local');
                     return;
                 }
                 
@@ -161,29 +171,26 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                         const appointments = await response.json();
                         allAppointments = appointments;
                         renderAppointments(allAppointments);
-                        saveAppointmentsToStorage();
+                        localStorage.setItem('appointments', JSON.stringify(appointments));
                         console.log('✅ Citas cargadas desde servidor HTTP:', appointments.length);
+                        connectionState.textContent = 'Estado: Datos cargados ✅';
                         updateConnectionStatus(true, 'Datos cargados via HTTP');
                     } else {
-                        throw new Error(`HTTP error: ${response.status} ${response.statusText}`);
+                        throw new Error(`HTTP error: ${response.status}`);
                     }
                 } catch (httpError) {
                     console.log('⚠️  Error HTTP, usando datos locales:', httpError.message);
                     loadAppointmentsFromStorage();
-                    updateConnectionStatus(false, 'Error HTTP - Usando datos locales');
+                    connectionState.textContent = 'Estado: Error HTTP - Modo local ⚠️';
+                    updateConnectionStatus(false, 'Error HTTP - Modo local');
                 }
                 
             } catch (error) {
                 console.error('❌ Error al cargar citas del servidor:', error);
                 loadAppointmentsFromStorage();
-                updateConnectionStatus(false, 'Error de conexión - Usando datos locales');
+                connectionState.textContent = 'Estado: Error de conexión - Modo local ❌';
+                updateConnectionStatus(false, 'Error de conexión - Modo local');
             }
-        }
-
-        // Función para formatear fecha
-        function formatDateTime(dateTimeStr) {
-            if (!dateTimeStr) return 'N/A';
-            return dateTimeStr;
         }
 
         // Función para actualizar el estado de conexión
@@ -191,14 +198,16 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
             if (connected) {
                 statusDot.classList.add('connected');
                 statusDot.style.backgroundColor = '#28a745';
+                connectionInfo.style.border = '2px solid #28a745';
             } else {
                 statusDot.classList.remove('connected');
                 statusDot.style.backgroundColor = '#dc3545';
+                connectionInfo.style.border = '2px solid #dc3545';
             }
-            statusText.textContent = message || 'Desconectado';
+            statusText.textContent = message;
         }
 
-        // Función para renderizar todas las citas en la tabla
+        // Función para renderizar citas
         function renderAppointments(appointments) {
             const tbody = document.getElementById('citasBody');
             tbody.innerHTML = '';
@@ -217,65 +226,47 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                     <td>${appointment.id || 'N/A'}</td>
                     <td>${appointment.patient_name || appointment.nombre || 'N/A'}</td>
                     <td>${appointment.patient_phone || appointment.telefono || 'N/A'}</td>
-                    <td>${formatDateTime(appointment.appointment_date || appointment.fecha)}</td>
+                    <td>${appointment.appointment_date || appointment.fecha || 'N/A'}</td>
                     <td>${appointment.service_type || appointment.servicio || 'N/A'}</td>
                     <td>${appointment.service_price || appointment.precio || 'N/A'}</td>
                     <td>
                         <span class="status-badge ${appointment.status || 'pending'}">
-                            ${isConfirmed ? 'Confirmado' : 
-                              isCancelled ? 'Cancelado' : 'Pendiente'}
+                            ${isConfirmed ? 'Confirmado' : isCancelled ? 'Cancelado' : 'Pendiente'}
                         </span>
                     </td>
                     <td class="actions-cell">
                         ${!isConfirmed && !isCancelled ? 
-                            `<button class="btn btn-success btn-sm confirm-btn" data-id="${appointment.id}">Confirmar</button>` : 
-                            ''}
-                        ${!isCancelled && !isConfirmed ? 
-                            `<button class="btn btn-danger btn-sm cancel-btn" data-id="${appointment.id}">Cancelar</button>` : 
-                            ''}
+                            `<button class="btn btn-success btn-sm confirm-btn" data-id="${appointment.id}">Confirmar</button>` : ''}
                         ${isConfirmed || isCancelled ? 
-                            `<span class="no-actions">No hay acciones disponibles</span>` : 
-                            ''}
+                            `<span class="no-actions">No hay acciones</span>` : ''}
                     </td>
                 `;
                 tbody.appendChild(row);
             });
             
-            // Agregar event listeners a los botones después de renderizar
             addButtonListeners();
         }
 
-        // Función para agregar event listeners a los botones
-        function addButtonListeners() {
-            // Botones de confirmar
-            document.querySelectorAll('.confirm-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const appointmentId = this.getAttribute('data-id');
-                    confirmAppointment(appointmentId);
-                });
-            });
+        // Función para conectar WebSocket (solo si el servidor está disponible)
+        async function connectWebSocket() {
+            // Primero verificar si el servidor está disponible
+            const isServerAvailable = await checkServerConnection();
             
-            // Botones de cancelar
-            document.querySelectorAll('.cancel-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const appointmentId = this.getAttribute('data-id');
-                    cancelAppointment(appointmentId);
-                });
-            });
-        }
-
-        // Función para conectar al servidor de WebSockets
-        function connectWebSocket() {
+            if (!isServerAvailable) {
+                console.log('⚠️  Servidor no disponible, omitiendo WebSocket');
+                updateConnectionStatus(false, 'Servidor no disponible - Modo HTTP');
+                return;
+            }
+            
             try {
                 if (typeof io === 'undefined') {
-                    console.error('❌ Socket.io no está disponible');
-                    updateConnectionStatus(false, 'Error: Socket.io no cargado');
-                    return;
+                    throw new Error('Socket.io no cargado');
                 }
                 
-                console.log('🔗 Iniciando conexión WebSocket...');
+                console.log('🔗 Intentando conexión WebSocket...');
+                connectionState.textContent = 'Estado: Conectando WebSocket...';
                 
-                // Cerrar conexión existente si hay una
+                // Cerrar conexión existente
                 if (socket) {
                     socket.disconnect();
                     socket = null;
@@ -283,195 +274,133 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                 
                 socket = io(BOT_SERVER_URL, {
                     transports: ['websocket', 'polling'],
-                    timeout: 5000,
-                    reconnection: true,
-                    reconnectionAttempts: 5,
-                    reconnectionDelay: 2000,
+                    timeout: 8000,
+                    reconnection: false, // Desactivar reconexión automática
                     forceNew: true
                 });
                 
                 socket.on('connect', () => {
-                    console.log('✅ Conectado al servidor de WebSockets');
+                    console.log('✅ WebSocket conectado');
+                    connectionState.textContent = 'Estado: WebSocket conectado ✅';
                     updateConnectionStatus(true, 'Conectado en tiempo real');
-                    
-                    // Solicitar todas las citas al conectarse
-                    socket.emit('getAllAppointments');
-                });
-                
-                // Evento para recibir todas las citas existentes
-                socket.on('allAppointments', (appointmentsData) => {
-                    console.log('📊 Recibidas todas las citas via WebSocket:', appointmentsData.length);
-                    allAppointments = appointmentsData;
-                    renderAppointments(allAppointments);
-                    saveAppointmentsToStorage();
-                });
-                
-                // Evento para recibir una nueva cita
-                socket.on('newAppointment', (appointmentData) => {
-                    console.log('🆕 Nueva cita recibida:', appointmentData);
-                    const newAppointment = {
-                        ...appointmentData,
-                        id: appointmentData.id || Date.now() // ID temporal si no viene del servidor
-                    };
-                    
-                    // Encontrar o crear la cita
-                    const index = allAppointments.findIndex(a => a.id === newAppointment.id);
-                    if (index === -1) {
-                        allAppointments.unshift(newAppointment);
-                    } else {
-                        allAppointments[index] = newAppointment;
-                    }
-                    
-                    renderAppointments(allAppointments);
-                    saveAppointmentsToStorage();
-                    showNotification(`Nueva cita de ${newAppointment.patient_name}`);
                 });
                 
                 socket.on('disconnect', (reason) => {
-                    console.log('❌ Desconectado del servidor de WebSockets:', reason);
+                    console.log('❌ WebSocket desconectado:', reason);
+                    connectionState.textContent = `Estado: WebSocket desconectado ❌`;
                     updateConnectionStatus(false, `Desconectado: ${reason}`);
                 });
                 
                 socket.on('connect_error', (error) => {
                     console.error('❌ Error de conexión WebSocket:', error.message);
+                    connectionState.textContent = 'Estado: Error WebSocket ❌';
                     updateConnectionStatus(false, 'Error de conexión WebSocket');
                 });
                 
-                socket.on('error', (error) => {
-                    console.error('❌ Error de Socket.io:', error);
-                });
+                // Timeout para conexión WebSocket
+                setTimeout(() => {
+                    if (!socket || !socket.connected) {
+                        console.log('⏰ Timeout de conexión WebSocket');
+                        if (socket) socket.disconnect();
+                        connectionState.textContent = 'Estado: Timeout WebSocket ⏰';
+                        updateConnectionStatus(false, 'Timeout de conexión');
+                    }
+                }, 10000);
                 
             } catch (error) {
-                console.error('❌ Error al inicializar WebSocket:', error);
-                updateConnectionStatus(false, 'Error inicializando WebSocket');
+                console.error('❌ Error al conectar WebSocket:', error);
+                connectionState.textContent = 'Estado: Error WebSocket ❌';
+                updateConnectionStatus(false, 'Error de conexión WebSocket');
             }
-        }
-
-        // Función para confirmar una cita
-        function confirmAppointment(appointmentId) {
-            if (socket && socket.connected) {
-                console.log(`📨 Enviando confirmación para cita ID: ${appointmentId}`);
-                socket.emit('confirmAppointment', appointmentId);
-                showNotification('Solicitando confirmación...');
-            } else {
-                showNotification('❌ Error: No hay conexión con el servidor');
-                console.error('No se puede enviar confirmación - Socket no conectado');
-            }
-        }
-
-        // Función para cancelar una cita
-        function cancelAppointment(appointmentId) {
-            showNotification('⚠️ Función de cancelación no implementada aún');
         }
 
         // Función para mostrar notificación
-        function showNotification(message) {
-            // Crear elemento de notificación si no existe
-            let notification = document.getElementById('notification');
-            if (!notification) {
-                notification = document.createElement('div');
-                notification.id = 'notification';
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 12px 16px;
-                    background: #4CAF50;
-                    color: white;
-                    border-radius: 6px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                    z-index: 10000;
-                    opacity: 0;
-                    transition: opacity 0.3s ease, transform 0.3s ease;
-                    max-width: 350px;
-                    word-wrap: break-word;
-                    font-size: 14px;
-                    transform: translateY(-20px);
-                `;
-                document.body.appendChild(notification);
-            }
-            
-            // Cambiar color según el tipo de mensaje
-            if (message.includes('❌') || message.includes('Error')) {
-                notification.style.background = '#dc3545';
-            } else if (message.includes('⚠️')) {
-                notification.style.background = '#ffc107';
-                notification.style.color = '#000';
-            } else {
-                notification.style.background = '#4CAF50';
-            }
-            
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 16px;
+                background: ${type === 'error' ? '#dc3545' : type === 'warning' ? '#ffc107' : '#4CAF50'};
+                color: ${type === 'warning' ? '#000' : 'white'};
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                max-width: 350px;
+                word-wrap: break-word;
+                font-size: 14px;
+            `;
             notification.textContent = message;
-            notification.style.opacity = '1';
-            notification.style.transform = 'translateY(0)';
+            document.body.appendChild(notification);
             
             setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateY(-20px)';
+                notification.remove();
             }, 4000);
         }
 
-        // Función para filtrar citas
-        function filterAppointments() {
-            const searchText = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
-            
-            const filteredAppointments = allAppointments.filter(appointment => {
-                const matchesSearch = 
-                    (appointment.patient_name && appointment.patient_name.toLowerCase().includes(searchText)) ||
-                    (appointment.nombre && appointment.nombre.toLowerCase().includes(searchText)) ||
-                    (appointment.patient_phone && appointment.patient_phone.includes(searchText)) ||
-                    (appointment.telefono && appointment.telefono.includes(searchText));
-                
-                const matchesStatus = statusFilter === 'all' || (appointment.status === statusFilter);
-                
-                return matchesSearch && matchesStatus;
-            });
-            
-            renderAppointments(filteredAppointments);
-        }
-
-        // Inicializar cuando el DOM esté listo
+        // Inicializar
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 Inicializando gestor de citas...');
-            console.log('🌍 URL actual:', window.location.href);
-            console.log('🔗 Servidor de bot:', BOT_SERVER_URL);
             
-            // Primero cargar citas desde el servidor o almacenamiento local
+            // Cargar datos primero
             await loadAppointmentsFromServer();
             
-            // Luego intentar conectar WebSocket (pero no bloquear la UI)
+            // Configurar botones
+            document.getElementById('btnRefresh').addEventListener('click', async () => {
+                showNotification('Actualizando datos...', 'info');
+                await loadAppointmentsFromServer();
+            });
+            
+            document.getElementById('btnTestConnection').addEventListener('click', async () => {
+                showNotification('Probando conexión...', 'info');
+                const isConnected = await checkServerConnection();
+                if (isConnected) {
+                    showNotification('✅ Conexión exitosa', 'info');
+                } else {
+                    showNotification('❌ Error de conexión', 'error');
+                }
+            });
+            
+            document.getElementById('btnAgregar').addEventListener('click', () => {
+                showNotification('Use el bot de WhatsApp para agregar citas', 'info');
+            });
+            
+            // Intentar WebSocket después de 2 segundos
             setTimeout(() => {
                 connectWebSocket();
-            }, 1000);
-            
-            // Configurar botones
-            document.getElementById('btnAgregar').addEventListener('click', () => {
-                showNotification('ℹ️ Use el bot de WhatsApp para agregar nuevas citas');
-            });
-            
-            document.getElementById('btnRefresh').addEventListener('click', async () => {
-                console.log('🔄 Forzando actualización de datos...');
-                showNotification('Actualizando datos...');
-                await loadAppointmentsFromServer();
-                
-                if (socket && !socket.connected) {
-                    connectWebSocket();
-                }
-            });
+            }, 2000);
             
             // Configurar filtros
-            document.getElementById('searchInput').addEventListener('input', filterAppointments);
-            document.getElementById('statusFilter').addEventListener('change', filterAppointments);
+            document.getElementById('searchInput').addEventListener('input', () => {
+                const searchText = document.getElementById('searchInput').value.toLowerCase();
+                const filtered = allAppointments.filter(apt => 
+                    (apt.patient_name || '').toLowerCase().includes(searchText) ||
+                    (apt.patient_phone || '').includes(searchText)
+                );
+                renderAppointments(filtered);
+            });
             
-            // Intentar reconexión periódica
-            setInterval(async () => {
-                if (!socket || !socket.connected) {
-                    console.log('🔄 Intentando reconexión WebSocket...');
-                    connectWebSocket();
-                }
-            }, 15000);
+            document.getElementById('statusFilter').addEventListener('change', () => {
+                const status = document.getElementById('statusFilter').value;
+                const filtered = status === 'all' 
+                    ? allAppointments 
+                    : allAppointments.filter(apt => apt.status === status);
+                renderAppointments(filtered);
+            });
         });
+
+        function addButtonListeners() {
+            document.querySelectorAll('.confirm-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    showNotification('Confirmación enviada al servidor', 'info');
+                    if (socket && socket.connected) {
+                        socket.emit('confirmAppointment', id);
+                    }
+                });
+            });
+        }
     </script>
 </LayoutLogin>
 
