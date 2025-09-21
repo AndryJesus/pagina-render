@@ -54,12 +54,19 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         </div>
     </div>
 
-    <!-- Cargar socket.io-client desde CDN -->
+     <!-- Cargar socket.io-client desde CDN -->
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 
     <script>
-        // 🚨 CORRECCIÓN: Usar el mismo dominio que tu bot
-        const WS_SERVER_URL = 'https://proyecto-bot-gbbo.onrender.com';
+        // 🚨 CORRECCIÓN: Detectar automáticamente el entorno
+        const IS_DEVELOPMENT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const BOT_SERVER_URL = IS_DEVELOPMENT 
+            ? 'http://localhost:10000'  // Desarrollo local
+            : 'https://proyecto-bot-gbbo.onrender.com';  // Producción
+            
+        console.log('🌍 Entorno:', IS_DEVELOPMENT ? 'Desarrollo' : 'Producción');
+        console.log('🔗 Conectando a:', BOT_SERVER_URL);
+        
         let socket = null;
         let connectionStatus = document.getElementById('connectionStatus');
         let statusDot = connectionStatus.querySelector('.status-dot');
@@ -71,10 +78,9 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         // Función para verificar la conexión al servidor
         async function checkServerConnection() {
             try {
-                const response = await fetch(`${WS_SERVER_URL}/health`, {
+                const response = await fetch(`${BOT_SERVER_URL}/health`, {
                     method: 'GET',
-                    mode: 'cors',
-                    credentials: 'include'
+                    mode: 'cors'
                 });
                 
                 if (response.ok) {
@@ -128,10 +134,9 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
                 
                 // Intentar cargar citas via HTTP como fallback
                 try {
-                    const response = await fetch(`${WS_SERVER_URL}/api/appointments`, {
+                    const response = await fetch(`${BOT_SERVER_URL}/api/appointments`, {
                         method: 'GET',
-                        mode: 'cors',
-                        credentials: 'include'
+                        mode: 'cors'
                     });
                     
                     if (response.ok) {
@@ -157,16 +162,7 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         // Función para formatear fecha
         function formatDateTime(dateTimeStr) {
             if (!dateTimeStr) return 'N/A';
-            
-            try {
-                // Asumiendo el formato dd/mm/aaaa hh:mm
-                const [datePart, timePart] = dateTimeStr.split(' ');
-                const [day, month, year] = datePart.split('/');
-                
-                return `${day}/${month}/${year} ${timePart}`;
-            } catch (e) {
-                return dateTimeStr;
-            }
+            return dateTimeStr;
         }
 
         // Función para actualizar el estado de conexión
@@ -266,12 +262,11 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         function connectWebSocket() {
             try {
                 if (typeof io !== 'undefined') {
-                    console.log('🔗 Conectando a WebSocket:', WS_SERVER_URL);
+                    console.log('🔗 Conectando a WebSocket:', BOT_SERVER_URL);
                     
-                    socket = io(WS_SERVER_URL, {
+                    socket = io(BOT_SERVER_URL, {
                         transports: ['websocket', 'polling'],
                         timeout: 10000,
-                        withCredentials: true,
                         reconnection: true,
                         reconnectionAttempts: 10,
                         reconnectionDelay: 1000
@@ -462,6 +457,8 @@ import LayoutLogin from "../layouts/LayoutLogin.astro";
         // Inicializar cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', async () => {
             console.log('🚀 Inicializando gestor de citas...');
+            console.log('📍 URL del frontend:', window.location.hostname);
+            console.log('🔗 URL del bot:', BOT_SERVER_URL);
             
             // Cargar citas existentes desde el servidor o almacenamiento local
             await loadAppointmentsFromServer();
